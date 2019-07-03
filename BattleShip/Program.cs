@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BattleShip
 {
@@ -10,6 +6,16 @@ namespace BattleShip
 	{
 		static void Main(string[] args)
 		{
+			//create a player and opponent to play against each other
+			Player player = new Player();
+			Player opponent = new Player();
+			player.SetOpponent(opponent);
+			opponent.SetOpponent(player);
+
+			//player starts the game first
+			player.StartGame();
+
+			Console.ReadLine();
 		}
 	}
 }
