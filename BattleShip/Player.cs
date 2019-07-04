@@ -31,8 +31,7 @@ namespace BattleShip
 			do
 			{
 				AddShip();
-				Console.Write("Would you like to add another ship? (Y / N) ");
-			} while (Console.ReadLine().ToUpper() == "Y");
+			} while (UserInput.GetBoolean("Would you like to add another ship? (Y / N) ", 'Y'));
 		}
 
 		/// <summary>
@@ -42,36 +41,14 @@ namespace BattleShip
 		private void AddShip()
 		{
 			Console.WriteLine("Creating new ship...");
-			bool validInput = false;
-
-			//get the length of the ship
-			do
-			{
-				Console.Write($"How many spaces long is the ship? ({Ship.MIN_LENGTH} - {Ship.MAX_LENGTH}) ");
-				//read user input
-				string lengthInput = Console.ReadLine();
-				//Catch exceptions if user enters something unexpected.
-				try
-				{
-					int length = int.Parse(lengthInput);
-					validInput = Ship.IsValidLength(length);
-				}
-				catch (FormatException e)
-				{
-					Console.WriteLine(e.Message);
-					validInput = false;
-				}
-				catch (OverflowException e)
-				{
-					Console.WriteLine(e.Message);
-					validInput = false;
-				}
-
-				if (!validInput)
-				{
-					Console.WriteLine($"Please enter a number between {Ship.MIN_LENGTH} - {Ship.MAX_LENGTH}...");
-				}
-			} while (!validInput);
+			Ship newShip;
+			newShip.length = UserInput.GetInt("How many spaces long is the ship?", Ship.MIN_LENGTH, Ship.MAX_LENGTH);
+			newShip.xPosition = UserInput.GetInt("Which column should the front of the ship be placed in?", 1, GameBoard.BOARD_SIZE);
+			newShip.yPosition = UserInput.GetInt("Which row should the front of the ship be placed in?", 1, GameBoard.BOARD_SIZE);
+			newShip.vertical = UserInput.GetBoolean("What orientation would you like to place your ship?\n" +
+				"If horizontal is chosen, the ship will extend to the right from your chosen position.\n" +
+				"If vertical is chosen, the ship will extend downwards from your chosen position.\n(V for vertical) ", 'V');
+			board.AddShip(newShip);
 		}
 
 		/// <summary>
@@ -79,7 +56,39 @@ namespace BattleShip
 		/// </summary>
 		public void StartGame()
 		{
-			Console.WriteLine("Game is starting.");
+			Console.WriteLine($"Game is starting. {playerName} will go first.");
+			Attack();
+		}
+
+		private void Attack()
+		{
+			Console.WriteLine($"{playerName}'s Turn.");
+			int x = UserInput.GetInt($"{playerName}, Which x-coordinate do you plan to attack?", 1, GameBoard.BOARD_SIZE);
+			int y = UserInput.GetInt($"{playerName}, Which y-coordinate do you plan to attack?", 1, GameBoard.BOARD_SIZE);
+			opponent.TakeHit(x, y);
+		}
+
+		private void TakeHit(int x, int y)
+		{
+			board.TakeHit(x, y);
+
+			if (board.ShipExistsOnTile(x, y))
+			{
+				Console.WriteLine("Hit!");
+			}
+			else
+			{
+				Console.WriteLine("Miss!");
+			}
+
+			if (board.AreAllShipsSunk())
+			{
+				Console.WriteLine($"Game Over. {opponent.playerName} wins!");
+			}
+			else
+			{
+				Attack();
+			}
 		}
 	}
 }
