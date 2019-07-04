@@ -15,6 +15,7 @@ namespace BattleShip
 			//player starts the game first
 			player.StartGame();
 
+			Console.Write("Press Enter to end the game.");
 			Console.ReadLine();
 		}
 	}

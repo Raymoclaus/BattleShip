@@ -6,7 +6,7 @@ namespace BattleShip
 	{
 		private GameBoard board = new GameBoard();
 		private Player opponent;
-		private string playerName = "defaultName";
+		private string playerName;
 
 		public Player()
 		{
@@ -15,6 +15,9 @@ namespace BattleShip
 			PlaceShips();
 		}
 
+		/// <summary>
+		/// Prompts the user to enter a name for the player.
+		/// </summary>
 		private void GetName()
 		{
 			Console.Write("What is this new player's name? ");
@@ -41,6 +44,7 @@ namespace BattleShip
 		private void AddShip()
 		{
 			Console.WriteLine("Creating new ship...");
+
 			Ship newShip;
 			newShip.length = UserInput.GetInt("How many spaces long is the ship?", Ship.MIN_LENGTH, Ship.MAX_LENGTH);
 			newShip.xPosition = UserInput.GetInt("Which column should the front of the ship be placed in?", 1, GameBoard.BOARD_SIZE);
@@ -48,11 +52,12 @@ namespace BattleShip
 			newShip.vertical = UserInput.GetBoolean("What orientation would you like to place your ship?\n" +
 				"If horizontal is chosen, the ship will extend to the right from your chosen position.\n" +
 				"If vertical is chosen, the ship will extend downwards from your chosen position.\n(V for vertical) ", 'V');
+
 			board.AddShip(newShip);
 		}
 
 		/// <summary>
-		/// Begins the "attacking" phase of the game and repeats until game over
+		/// Begins the "attacking" phase of the game
 		/// </summary>
 		public void StartGame()
 		{
@@ -60,6 +65,10 @@ namespace BattleShip
 			Attack();
 		}
 
+		/// <summary>
+		/// Prompts the user for coordinates to attack the opponent's board,
+		/// then tells the opponent to take the hit at the chosen coordinates.
+		/// </summary>
 		private void Attack()
 		{
 			Console.WriteLine($"{playerName}'s Turn.");
@@ -68,6 +77,13 @@ namespace BattleShip
 			opponent.TakeHit(x, y);
 		}
 
+		/// <summary>
+		/// The player's game board records a hit at the given coordinates,
+		/// prints "Hit!" or "Miss!" if a ship piece occupied those coordinates.
+		/// If all ships are sunk, the game ends, otherwise return an attack to the other player.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
 		private void TakeHit(int x, int y)
 		{
 			board.TakeHit(x, y);
